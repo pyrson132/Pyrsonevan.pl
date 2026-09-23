@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pyrsonevan.pl — Serwer Minecraft</title>
+<meta name="description" content="Pyrsonevan.pl — nowoczesny serwer Minecraft.">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:Arial,Helvetica,sans-serif;background:#07090d;color:#fff;line-height:1.6;overflow-x:hidden}
+a{text-decoration:none;color:inherit}
+header{position:fixed;top:0;left:0;right:0;z-index:20;background:rgba(7,9,13,.78);backdrop-filter:blur(14px);border-bottom:1px solid rgba(255,255,255,.08)}
+.nav{max-width:1150px;margin:auto;padding:15px 22px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+.logo{font-size:25px;font-weight:900;letter-spacing:.5px}.logo span{color:#ff3030}
+nav{display:flex;gap:8px;flex-wrap:wrap}nav a{padding:9px 13px;border-radius:10px;color:#cfd3da;font-size:14px}nav a:hover{background:#171b23;color:#fff}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:13px 20px;border-radius:12px;border:1px solid rgba(255,255,255,.1);font-weight:800;cursor:pointer;transition:.2s}
+.btn-red{background:#ef2b2d;box-shadow:0 8px 30px rgba(239,43,45,.25)}.btn-red:hover{transform:translateY(-2px);background:#ff3b3d}
+.btn-dark{background:#12161e}.btn-dark:hover{background:#1b212c}
+.hero{min-height:760px;padding:150px 22px 90px;display:flex;align-items:center;position:relative;background:radial-gradient(circle at 50% 25%,rgba(239,43,45,.18),transparent 35%),linear-gradient(180deg,#090b10,#07090d)}
+.hero:before{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);background-size:45px 45px;mask-image:linear-gradient(to bottom,#000,transparent)}
+.hero-content{position:relative;max-width:1000px;margin:auto;text-align:center}
+.badge{display:inline-block;padding:7px 13px;border-radius:999px;background:rgba(239,43,45,.1);border:1px solid rgba(239,43,45,.3);color:#ff6769;font-size:13px;font-weight:800;margin-bottom:18px}
+h1{font-size:clamp(48px,9vw,94px);line-height:.98;margin-bottom:20px}h1 span{color:#ef2b2d;text-shadow:0 0 35px rgba(239,43,45,.25)}
+.hero p{max-width:680px;margin:0 auto 28px;color:#aeb4bf;font-size:18px}
+.actions{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
+.server-box{margin:45px auto 0;max-width:650px;background:rgba(15,18,24,.85);border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:18px;display:flex;align-items:center;justify-content:space-between;gap:18px;text-align:left}
+.status{display:flex;align-items:center;gap:9px;color:#b9c0ca;font-size:14px}.dot{width:10px;height:10px;border-radius:50%;background:#f1a500;box-shadow:0 0 14px #f1a500}.ip{font-size:20px;font-weight:900}.muted{color:#8d95a2;font-size:13px}
+section{padding:90px 22px}.wrap{max-width:1150px;margin:auto}.section-head{text-align:center;margin-bottom:40px}.section-head h2{font-size:38px}.section-head p{color:#9299a5;margin-top:8px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.card{background:#0e1218;border:1px solid #1d232d;border-radius:18px;padding:26px;transition:.25s}.card:hover{transform:translateY(-5px);border-color:#3a2528}.icon{font-size:28px;margin-bottom:10px}.card h3{margin-bottom:6px}.card p{color:#9299a5;font-size:14px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.stat{text-align:center;background:#0e1218;border:1px solid #1d232d;border-radius:18px;padding:30px}.stat strong{font-size:40px;color:#ff4042}.stat span{display:block;color:#9299a5}
+.ranks{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}.rank{padding:26px;border-radius:18px;background:#0e1218;border:1px solid #242a34;text-align:center}.rank h3{font-size:24px;margin-bottom:8px}.rank p{color:#9ba2ad;font-size:14px;min-height:70px}.rank .price{font-size:24px;font-weight:900;margin:14px 0}
+.vip h3{color:#55b8ff}.svip h3{color:#b778ff}.gvip h3{color:#ffbd4a}.pyra h3{color:#ff4548}
+.rules{max-width:800px;margin:auto}.rule{display:flex;gap:15px;padding:18px 0;border-bottom:1px solid #1d232d}.num{min-width:32px;height:32px;border-radius:9px;background:#ef2b2d;display:grid;place-items:center;font-weight:900}
+footer{border-top:1px solid #1d232d;padding:35px 22px;color:#7f8794;text-align:center;background:#06080b}
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:50;place-items:center;padding:20px}.modal.show{display:grid}.modal-box{width:min(430px,100%);background:#10141b;border:1px solid #2a303a;border-radius:20px;padding:28px}.modal-box h2{margin-bottom:15px}.modal-box input{width:100%;margin:7px 0;padding:13px;background:#090c11;border:1px solid #2a303a;border-radius:10px;color:#fff}.close{float:right;cursor:pointer;color:#999;font-size:22px}
+@media(max-width:850px){nav{display:none}.grid{grid-template-columns:1fr}.ranks{grid-template-columns:1fr 1fr}.stats{grid-template-columns:1fr}.server-box{flex-direction:column;align-items:stretch;text-align:center}}
+@media(max-width:520px){.ranks{grid-template-columns:1fr}.hero{min-height:700px}.server-box .btn{width:100%}section{padding:70px 16px}}
+</style>
+</head>
+<body>
+<header><div class="nav">
+<a class="logo" href="#start">Pyrso<span>nevan.pl</span></a>
+<nav><a href="#start">Start</a><a href="#rangi">Rangi</a><a href="#statystyki">Statystyki</a><a href="#regulamin">Regulamin</a><a href="#kontakt">Kontakt</a></nav>
+<div style="display:flex;gap:8px"><button class="btn btn-dark" onclick="openModal('login')">Zaloguj</button><a class="btn btn-red" href="#rangi">Sklep</a></div>
+</div></header>
+
+<main id="start">
+<section class="hero"><div class="hero-content">
+<div class="badge">⚔️ NOWOCZESNY SERWER MINECRAFT</div>
+<h1>Witaj na <span>Pyrsonevan.pl</span></h1>
+<p>Dołącz do naszej społeczności, poznaj nowych graczy i baw się na wyjątkowym serwerze Minecraft.</p>
+<div class="actions"><button class="btn btn-red" onclick="copyIP()">🎮 Kopiuj IP serwera</button><a class="btn btn-dark" href="https://discord.com/" target="_blank">💬 Dołącz na Discord</a></div>
+<div class="server-box"><div><div class="status"><i class="dot" id="dot"></i><span id="status">Sprawdzanie statusu...</span></div><div class="ip">play.pyrsonevan.pl</div><div class="muted">Minecraft Java • 1.21.4+</div></div><div><strong id="players">--</strong><div class="muted">graczy online</div></div></div>
+</div></section>
+
+<section id="statystyki"><div class="wrap"><div class="section-head"><h2>Statystyki serwera</h2><p>Najważniejsze informacje w jednym miejscu.</p></div>
+<div class="stats"><div class="stat"><strong id="players2">--</strong><span>Graczy online</span></div><div class="stat"><strong>1.21.4+</strong><span>Wersja Minecraft</span></div><div class="stat"><strong>24/7</strong><span>Dostępność</span></div></div></div></section>
+
+<section><div class="wrap"><div class="section-head"><h2>Dlaczego Pyrsonevan?</h2><p>Wszystko, czego potrzebujesz do dobrej zabawy.</p></div>
+<div class="grid"><div class="card"><div class="icon">⚡</div><h3>Stabilna rozgrywka</h3><p>Serwer przygotowany z myślą o płynnej i przyjemnej rozgrywce.</p></div><div class="card"><div class="icon">🛡️</div><h3>Bezpieczna społeczność</h3><p>Administracja i systemy serwera pomagają utrzymać porządek.</p></div><div class="card"><div class="icon">🏆</div><h3>Rangi i nagrody</h3><p>Od VIP aż po wyjątkową rangę PYRA — wybierz swoje dodatki.</p></div></div></div></section>
+
+<section id="rangi"><div class="wrap"><div class="section-head"><h2>Rangi</h2><p>Wybierz rangę dla swojego konta.</p></div>
+<div class="ranks">
+<div class="rank vip"><h3>VIP</h3><p>Podstawowe przywileje i dodatki na serwerze.</p><div class="price">9,99 zł</div><button class="btn btn-red" onclick="buy('VIP')">Kup rangę</button></div>
+<div class="rank svip"><h3>SVIP</h3><p>Więcej możliwości i dodatkowe udogodnienia.</p><div class="price">19,99 zł</div><button class="btn btn-red" onclick="buy('SVIP')">Kup rangę</button></div>
+<div class="rank gvip"><h3>GVIP</h3><p>Rozszerzone przywileje dla aktywnych graczy.</p><div class="price">29,99 zł</div><button class="btn btn-red" onclick="buy('GVIP')">Kup rangę</button></div>
+<div class="rank pyra"><h3>PYRA</h3><p>Specjalna ranga dla najbardziej zaangażowanych.</p><div class="price">49,99 zł</div><button class="btn btn-red" onclick="buy('PYRA')">Kup rangę</button></div>
+</div></div></section>
+
+<section id="regulamin"><div class="wrap"><div class="section-head"><h2>Regulamin</h2><p>Podstawowe zasady naszej społeczności.</p></div><div class="rules">
+<div class="rule"><div class="num">1</div><div><b>Szanuj innych</b><p class="muted">Nie obrażaj innych graczy i zachowuj kulturę.</p></div></div>
+<div class="rule"><div class="num">2</div><div><b>Nie używaj cheatów</b><p class="muted">Zakazane jest korzystanie z niedozwolonych modyfikacji.</p></div></div>
+<div class="rule"><div class="num">3</div><div><b>Nie wykorzystuj błędów</b><p class="muted">Znalezione błędy zgłaszaj administracji.</p></div></div>
+<div class="rule"><div class="num">4</div><div><b>Przestrzegaj administracji</b><p class="muted">Stosuj się do poleceń administracji podczas rozgrywki.</p></div></div>
+</div></div></section>
+
+<section id="kontakt"><div class="wrap"><div class="section-head"><h2>Kontakt</h2><p>Potrzebujesz pomocy? Jesteśmy na Discordzie.</p></div><div style="text-align:center"><a class="btn btn-red" href="https://discord.com/" target="_blank">💬 Otwórz Discord</a></div></div></section>
+</main>
+<footer>© 2026 Pyrsonevan.pl • Wszystkie prawa zastrzeżone.</footer>
+
+<div class="modal" id="modal"><div class="modal-box"><span class="close" onclick="closeModal()">×</span><h2 id="modalTitle">Logowanie</h2><p class="muted">To jest demonstracyjny formularz HTML. Prawdziwe Google/Discord OAuth wymaga backendu.</p><input placeholder="Nazwa użytkownika lub e-mail"><input type="password" placeholder="Hasło"><button class="btn btn-red" style="width:100%;margin-top:10px" onclick="alert('Demo: formularz został wysłany.')">Kontynuuj</button><button class="btn btn-dark" style="width:100%;margin-top:8px" onclick="alert('Demo: logowanie przez Discord wymaga konfiguracji OAuth.')">💬 Discord</button><button class="btn btn-dark" style="width:100%;margin-top:8px" onclick="alert('Demo: logowanie przez Google wymaga konfiguracji OAuth.')">G Google</button></div></div>
+
+<script>
+const IP="play.pyrsonevan.pl";
+function copyIP(){navigator.clipboard?.writeText(IP);alert("Skopiowano IP: "+IP)}
+function openModal(type){document.getElementById("modal").classList.add("show");document.getElementById("modalTitle").textContent=type==="login"?"Logowanie":"Rejestracja"}
+function closeModal(){document.getElementById("modal").classList.remove("show")}
+function buy(rank){alert("Wybrano rangę "+rank+". Podłącz tutaj swój system płatności.")}
+async function updateStatus(){
+ try{
+  const r=await fetch("https://api.mcsrvstat.us/3/"+IP);
+  const d=await r.json();
+  const online=!!d.online, n=online?(d.players?.online||0):0;
+  document.getElementById("status").textContent=online?"Serwer ONLINE":"Serwer OFFLINE";
+  document.getElementById("players").textContent=n;
+  document.getElementById("players2").textContent=n;
+  document.getElementById("dot").style.background=online?"#29e66d":"#ef2b2d";
+  document.getElementById("dot").style.boxShadow=online?"0 0 14px #29e66d":"0 0 14px #ef2b2d";
+ }catch(e){document.getElementById("status").textContent="Status niedostępny";document.getElementById("players").textContent="--";document.getElementById("players2").textContent="--"}
+}
+updateStatus();setInterval(updateStatus,30000);
+</script>
+</body></html>
