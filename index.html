@@ -102,4 +102,64 @@ async function updateStatus(){
 }
 updateStatus();setInterval(updateStatus,30000);
 </script>
-</body></html>
+ <!-- Licznik odwiedzin po prawej stronie -->
+<div id="counter-box">
+  <span class="counter-label">Liczba odwiedzin</span>
+  <span id="visit-count">...</span>
+</div>
+
+<style>
+  #counter-box {
+    position: fixed;      /* Przyklejenie do ekranu */
+    right: 0;             /* Dociśnięcie do prawej krawędzi */
+    top: 50%;             /* Wyśrodkowanie w pionie */
+    transform: translateY(-50%);
+    background-color: #1e1e24; /* Ciemne tło */
+    color: #ffffff;
+    padding: 12px 18px;
+    border-radius: 10px 0 0 10px; /* Zaokrąglenie lewych rogów */
+    box-shadow: -4px 4px 15px rgba(0, 0, 0, 0.25);
+    font-family: Arial, sans-serif;
+    text-align: center;
+    z-index: 9999;        /* Na wierzchu wszystkich elementów */
+  }
+
+  .counter-label {
+    display: block;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #a0a0a0;
+    margin-bottom: 4px;
+  }
+
+  #visit-count {
+    font-size: 20px;
+    font-weight: bold;
+    color: #00ff88;       /* Zielony jaskrawy kolor cyfr */
+  }
+</style>
+
+<script>
+  // Zastąp 'moja-unikalna-strona-2026' dowolną własną nazwą
+  const NAMESPACE = 'moja-unikalna-strona-2026';
+  const KEY = 'visits';
+
+  fetch(`https://api.counterapi.dev/v1/${NAMESPACE}/${KEY}/up`)
+    .then(response => response.json())
+    .then(data => {
+      const counterElement = document.getElementById('visit-count');
+      if (counterElement && data.count) {
+        counterElement.innerText = data.count;
+      }
+    })
+    .catch(error => {
+      console.error('Błąd licznika:', error);
+      const counterElement = document.getElementById('visit-count');
+      if (counterElement) {
+        counterElement.innerText = '1';
+      }
+    });
+</script>
+</body>
+</html>
