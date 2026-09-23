@@ -49,7 +49,7 @@ footer{border-top:1px solid #1d232d;padding:35px 22px;color:#7f8794;text-align:c
 <main id="start">
 <section class="hero"><div class="hero-content">
 <div class="badge">⚔️ NOWOCZESNY SERWER MINECRAFT</div>
-<h1>Witaj na <span>(Filip) marka ddos</span></h1>
+<h1>Witaj na <span>Pyrsonevan.pl</span></h1>
 <p>Dołącz do naszej społeczności, poznaj nowych graczy i baw się na wyjątkowym serwerze Minecraft.</p>
 <div class="actions"><button class="btn btn-red" onclick="copyIP()">🎮 Kopiuj IP serwera</button><a class="btn btn-dark" href="https://discord.com/" target="_blank">💬 Dołącz na Discord</a></div>
 <div class="server-box"><div><div class="status"><i class="dot" id="dot"></i><span id="status">Sprawdzanie statusu...</span></div><div class="ip">pyrsonevan.pl</div><div class="muted">Minecraft Java • 1.21.4+</div></div><div><strong id="players">--</strong><div class="muted">graczy online</div></div></div>
@@ -83,7 +83,7 @@ footer{border-top:1px solid #1d232d;padding:35px 22px;color:#7f8794;text-align:c
 <div class="modal" id="modal"><div class="modal-box"><span class="close" onclick="closeModal()">×</span><h2 id="modalTitle">Logowanie</h2><p class="muted">To jest demonstracyjny formularz HTML. Prawdziwe Google/Discord OAuth wymaga backendu.</p><input placeholder="Nazwa użytkownika lub e-mail"><input type="password" placeholder="Hasło"><button class="btn btn-red" style="width:100%;margin-top:10px" onclick="alert('Demo: formularz został wysłany.')">Kontynuuj</button><button class="btn btn-dark" style="width:100%;margin-top:8px" onclick="alert('Demo: logowanie przez Discord wymaga konfiguracji OAuth.')">💬 Discord</button><button class="btn btn-dark" style="width:100%;margin-top:8px" onclick="alert('Demo: logowanie przez Google wymaga konfiguracji OAuth.')">G Google</button></div></div>
 
 <script>
-const IP="play.pyrsonevan.pl";
+const IP="pyrsonevan.pl";
 function copyIP(){navigator.clipboard?.writeText(IP);alert("Skopiowano IP: "+IP)}
 function openModal(type){document.getElementById("modal").classList.add("show");document.getElementById("modalTitle").textContent=type==="login"?"Logowanie":"Rejestracja"}
 function closeModal(){document.getElementById("modal").classList.remove("show")}
