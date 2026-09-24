@@ -50,7 +50,7 @@ footer{border-top:1px solid #1d232d;padding:35px 22px;color:#7f8794;text-align:c
             <a href="#regulamin">Regulamin</a>
             <a href="#kontakt">Kontakt</a>
         </nav>
-        <button class="btn btn-dark" onclick="openModal('login')">Zaloguj</button>
+     <button id="login-btn" class="btn btn-dark" onclick="openModal('login')">Zaloguj</button>
     </div>
 </header>
 <section class="hero"><div class="hero-content">
@@ -86,7 +86,7 @@ footer{border-top:1px solid #1d232d;padding:35px 22px;color:#7f8794;text-align:c
 </main>
 <footer>© 2026 Pyrsonevan.pl • Wszystko co piszesz jest zabezpieczone i widzimy tylko my.</footer>
 
-<div class="modal" id="modal"><div class="modal-box"><span class="close" onclick="closeModal()">×</span><h2 id="modalTitle">Logowanie</h2><p class="muted">dziala juz logowanie ale nia ma logowania discord bo wszystko sie psuje [:.</p><input id="emailInput" type="email" placeholder="Nazwa użytkownika lub e-mail"><input id="passwordInput" type="password" placeholder="Hasło"><button class="btn btn-red" style="width:100%;margin-top:10px" onclick="loginWithEmail(event)">Kontynuuj</button><button class="btn btn-dark" style="width:100%;margin-top:8px" onclick="loginWithGoogle()">G Google</button></div></div>
+<div class="modal" id="modal"><div class="modal-box"><span class="close" onclick="closeModal()">×</span><h2 id="modalTitle">Logowanie</h2><p class="muted">dziala juz logowanie ale nia ma logowania discord bo wszystko sie psuje [:.</p><input id="emailInput" type="email" placeholder="Nazwa użytkownika lub e-mail"><input id="passwordInput" type="password" placeholder="Hasło"><button class="btn btn-red" style="width:100%;margin-top:10px" onclick="handleLogin()">Kontynuuj</button><button class="btn btn-dark" style="width:100%;margin-top:8px" onclick="loginWithGoogle()">G Google</button></div></div>
 
 <script>
 const IP="pyrsonevan.pl";
@@ -254,7 +254,40 @@ updateStatus();setInterval(updateStatus,30000);
       if (loggedInView) loggedInView.style.display = 'none';
     }
   });
+<script>
+window.addEventListener('DOMContentLoaded', () => {
+  const isLogged = localStorage.getItem('is_logged_in');
+  if (isLogged === 'true') {
+    transformLoginButton();
+  }
+});
 
+function handleLogin() {
+  localStorage.setItem('is_logged_in', 'true');
+  
+  if (typeof closeModal === 'function') {
+    closeModal('login');
+  }
+  
+  transformLoginButton();
+}
+
+function transformLoginButton() {
+  const loginBtn = document.getElementById('login-btn');
+  if (!loginBtn) return;
+
+  loginBtn.outerHTML = `
+    <div id="login-btn" style="display: inline-flex; align-items: center; gap: 8px;">
+      <div style="width: 32px; height: 32px; background: #e53935; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: bold; font-size: 14px;" title="Zalogowany">U</div>
+      <button class="btn btn-dark" onclick="logoutUser()" style="padding: 6px 12px; font-size: 13px;">Wyloguj</button>
+    </div>
+  `;
+}
+
+function logoutUser() {
+  localStorage.removeItem('is_logged_in');
+  window.location.reload();
+}
 </script>
 </body>
 </html>
