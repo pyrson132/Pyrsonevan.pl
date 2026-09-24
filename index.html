@@ -252,17 +252,7 @@ updateStatus();setInterval(updateStatus,30000);
         userAvatar.title = user.displayName || user.email;
       }
 
-      if (typeof window.closeModal === 'function') {
-        window.closeModal('login');
-      } else if (typeof closeModal === 'function') {
-        closeModal('login');
-      }
-    } else {
-      if (loggedOutView) loggedOutView.style.display = 'block';
-      if (loggedInView) loggedInView.style.display = 'none';
-    }
-  });
-window.addEventListener('DOMContentLoaded', () => {
+   window.addEventListener('DOMContentLoaded', () => {
   if (localStorage.getItem('is_logged_in') === 'true') {
     transformLoginButton();
   }
@@ -271,7 +261,6 @@ window.addEventListener('DOMContentLoaded', () => {
 function handleLogin() {
   localStorage.setItem('is_logged_in', 'true');
   
-  // Próbujemy zamknąć okno na kilka różnych sposobów, żeby uniknąć błędów
   try {
     if (typeof closeModal === 'function') {
       closeModal();
@@ -303,6 +292,5 @@ function logoutUser() {
   localStorage.removeItem('is_logged_in');
   window.location.reload();
 }
-</script>
 </body>
 </html>
