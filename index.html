@@ -177,15 +177,16 @@ updateStatus();setInterval(updateStatus,30000);
     }
   };
 
-  // Logowanie i rejestracja e-mailem/hasłem
+// Logowanie i rejestracja e-mailem/hasłem
   window.loginWithEmail = async function(event) {
     if (event) event.preventDefault();
-    
-    const emailInput = document.querySelector('#login-modal input[type="email"]') || 
-                       document.querySelector('#login-modal input[placeholder*="e-mail"]') || 
-                       document.querySelector('#login-modal input[type="text"]');
-    const passwordInput = document.querySelector('#login-modal input[type="password"]');
 
+    const emailInput = document.querySelector('input[type="email"]') || 
+                       document.querySelector('input[placeholder*="e-mail"]') || 
+                       document.querySelector('input[placeholder*="Nazwa"]') ||
+                       document.querySelector('input[type="text"]');
+                       
+    const passwordInput = document.querySelector('input[type="password"]');
     if (!emailInput || !passwordInput) {
       alert("Nie znaleziono pól logowania.");
       return;
