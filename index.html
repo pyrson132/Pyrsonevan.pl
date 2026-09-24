@@ -247,17 +247,54 @@ updateStatus();setInterval(updateStatus,30000);
       if (loggedOutView) loggedOutView.style.display = 'none';
       if (loggedInView) loggedInView.style.display = 'flex';
       
-      if (userAvatar) {
-        userAvatar.src = user.photoURL || 'https://via.placeholder.com/36';
-        userAvatar.title = user.displayName || user.email;
+    if (userAvatar) {
+            userAvatar.src = user.photoURL || 'https://via.placeholder.com/36';
+            userAvatar.title = user.displayName || user.email;
+          }
+        }
+      }); // <-- TUTAJ ZAMYKAMY POPRZEDNI BLOK onAuthStateChanged
+
+      // --- NASZ BEZPIECZNY KOD LOGOWANIA ---
+      window.addEventListener('DOMContentLoaded', () => {
+        if (localStorage.getItem('is_logged_in') === 'true') {
+          transformLoginButton();
+        }
+      });
+
+      function handleLogin() {
+        localStorage.setItem('is_logged_in', 'true');
+        
+        try {
+          if (typeof closeModal === 'function') {
+            closeModal();
+          }
+        } catch (e) {}
+
+        const modal = document.getElementById('modal');
+        if (modal) {
+          modal.style.display = 'none';
+          modal.classList.remove('show');
+        }
+        
+        transformLoginButton();
       }
 
-   window.addEventListener('DOMContentLoaded', () => {
-  if (localStorage.getItem('is_logged_in') === 'true') {
-    transformLoginButton();
-  }
-});
+      function transformLoginButton() {
+        const loginBtn = document.getElementById('login-btn');
+        if (!loginBtn) return;
 
+        loginBtn.outerHTML = `
+          <div id="login-btn" style="display: inline-flex; align-items: center; gap: 8px;">
+            <div style="width: 32px; height: 32px; background: #e53935; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: bold; font-size: 14px;" title="Zalogowany">U</div>
+            <button class="btn btn-dark" onclick="logoutUser()" style="padding: 6px 12px; font-size: 13px;">Wyloguj</button>
+          </div>
+        `;
+      }
+
+      function logoutUser() {
+        localStorage.removeItem('is_logged_in');
+        window.location.reload();
+      }
 function handleLogin() {
   localStorage.setItem('is_logged_in', 'true');
   
