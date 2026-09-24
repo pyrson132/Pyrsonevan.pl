@@ -43,8 +43,7 @@ footer{border-top:1px solid #1d232d;padding:35px 22px;color:#7f8794;text-align:c
 <header><div class="nav">
 <a class="logo" href="#start">Pyrso<span>nevan.pl</span></a>
 <nav><a href="#start">Start</a><a href="#rangi">Rangi</a><a href="#statystyki">Statystyki</a><a href="#regulamin">Regulamin</a><a href="#kontakt">Kontakt</a></nav>
-<button id="discord-login-btn" class="btn btn-dark" onclick="loginWithDiscord()">Zaloguj</button>
-<main id="start">
+<button class="btn btn-dark" onclick="openModal('login')">Zaloguj</button>
 <section class="hero"><div class="hero-content">
 <div class="badge">⚔️ NOWOCZESNY SERWER MINECRAFT</div>
 <h1>Witaj na <span> Pyrsonevan.pl </span></h1>
@@ -246,79 +245,7 @@ updateStatus();setInterval(updateStatus,30000);
       if (loggedInView) loggedInView.style.display = 'none';
     }
   });
-// ==========================================
-// OSTATECZNA, BEZPIECZNA INTEGRACJA DISCORDA
-// ==========================================
-const DISCORD_CLIENT_ID = '1552604316332851230';
 
-window.loginWithDiscord = function() {
-  const redirectUri = window.location.origin + window.location.pathname;
-  const discordUrl = `https://discord.com/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&response_type=token&redirect_uri=${encodeURIComponent(redirectUri)}&scope=identify+email`;
-  window.location.href = discordUrl;
-};
-
-window.logout = function() {
-  try {
-    localStorage.removeItem('discord_user');
-    localStorage.removeItem('discord_token');
-  } catch (e) {}
-  window.location.href = window.location.pathname;
-};
-
-function applyDiscordState() {
-  try {
-    const btn = document.getElementById('discord-login-btn');
-    if (!btn) return;
-
-    const savedUser = localStorage.getItem('discord_user');
-    if (savedUser) {
-      const user = JSON.parse(savedUser);
-      // Zamieniamy przycisk logowania na awatar i przycisk wylogowania w jednej linii
-      btn.outerHTML = `
-        <div id="discord-login-btn" style="display: inline-flex; align-items: center; gap: 8px;">
-          <img src="${user.avatar}" alt="Avatar" title="${user.name}" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;">
-          <button class="btn btn-dark" onclick="logout()">Wyloguj</button>
-        </div>
-      `;
-    }
-  } catch (e) {
-    console.error("Błąd stanu:", e);
-  }
-}
-
-// Uruchomienie od razu
-applyDiscordState();
-
-// Obsługa tokena po powrocie z Discorda
-window.addEventListener('DOMContentLoaded', () => {
-  try {
-    const hash = window.location.hash;
-    if (hash && hash.includes('access_token=')) {
-      const params = new URLSearchParams(hash.substring(1));
-      const token = params.get('access_token');
-
-      if (token) {
-        fetch('https://discord.com/api/v10/users/@me', {
-          headers: { authorization: `Bearer ${token}` }
-        })
-        .then(res => res.json())
-        .then(user => {
-          const avatarUrl = user.avatar 
-            ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`
-            : 'https://via.placeholder.com/36';
-          const userName = user.global_name || user.username;
-
-          localStorage.setItem('discord_user', JSON.stringify({ name: userName, avatar: avatarUrl }));
-          localStorage.setItem('discord_token', token);
-          
-          applyDiscordState();
-          window.history.replaceState({}, document.title, window.location.pathname);
-        })
-        .catch(err => console.error("Błąd API Discord:", err));
-      }
-    }
-  } catch (e) {}
-});
 </script>
 </body>
 </html>
