@@ -90,8 +90,8 @@ footer{border-top:1px solid #1d232d;padding:35px 22px;color:#7f8794;text-align:c
     <span class="close" onclick="closeModal()"></span>
     <h2 id="modalTitle">Logowanie</h2>
     <p class="muted">Wprowadź dane, aby kontynuować.</p>
-    <input id="emailInput" type="text" placeholder="Email lub login" style="width:100%; padding:10px; margin-top:10px; background:#1e1e1e; border:1px solid #333; color:#fff; border-radius:5px;">
-    <input id="passwordInput" type="password" placeholder="Hasło" style="width:100%; padding:10px; margin-top:10px; background:#1e1e1e; border:1px solid #333; color:#fff; border-radius:5px;">
+    <input id="emailInput" type="text" placeholder="Email lub login" style="width:100%; padding:10px; margin-top:10px; background:#1e1e1e; border:1px solid #333; color:#fff;">
+    <input id="passwordInput" type="password" placeholder="Hasło" style="width:100%; padding:10px; margin-top:10px; background:#1e1e1e; border:1px solid #333; color:#fff;">
     <button class="btn btn-red" style="width:100%; margin-top:10px; cursor:pointer;" onclick="handleLogin()">Kontynuuj</button>
     <button class="btn btn-dark" style="width:100%; margin-top:8px; cursor:pointer;" onclick="handleLogin()">G Google</button>
   </div>
@@ -272,14 +272,17 @@ window.addEventListener('DOMContentLoaded', () => {
 function handleLogin() {
   localStorage.setItem('is_logged_in', 'true');
   
-  if (typeof closeModal === 'function') {
-    closeModal();
-  } else {
-    const modal = document.getElementById('modal');
-    if (modal) {
-      modal.style.display = 'none';
-      modal.classList.remove('show');
+  // Próbujemy zamknąć okno na kilka różnych sposobów, żeby uniknąć błędów
+  try {
+    if (typeof closeModal === 'function') {
+      closeModal();
     }
+  } catch (e) {}
+
+  const modal = document.getElementById('modal');
+  if (modal) {
+    modal.style.display = 'none';
+    modal.classList.remove('show');
   }
   
   transformLoginButton();
