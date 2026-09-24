@@ -248,55 +248,84 @@ updateStatus();setInterval(updateStatus,30000);
       if (loggedInView) loggedInView.style.display = 'none';
     }
   });
- // Integracja logowania Discord
-const DISCORD_CLIENT_ID = '1552604316332851230';
-
-window.loginWithDiscord = function() {
-  const redirectUri = window.location.origin + window.location.pathname;
-  const discordUrl = `https://discord.com/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&response_type=token&redirect_uri=${encodeURIComponent(redirectUri)}&scope=identify+email`;
-  window.location.href = discordUrl;
-};
-
-// Obsługa powrotu z Discorda
+// Obsługa powrotu z Discorda oraz odczyt zapisanej sesji
 function handleDiscordCallback() {
   const hash = window.location.hash;
+  
   if (hash.includes('access_token=')) {
     const params = new URLSearchParams(hash.substring(1));
     const token = params.get('access_token');
 
     if (token) {
       fetch('https://discord.com/api/v10/users/@me', {
-        headers: {
-          authorization: `Bearer ${token}`
-        }
+        headers: { authorization: `Bearer ${token}` }
       })
       .then(res => res.json())
       .then(user => {
         const avatarUrl = user.avatar 
           ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`
           : 'https://via.placeholder.com/36';
+        const userName = user.global_name || user.username;
 
-        const loggedOutView = document.getElementById('logged-out-view');
-        const loggedInView = document.getElementById('logged-in-view');
-        const userAvatar = document.getElementById('user-avatar');
+        // Zapisujemy sesję Discorda w przeglądarce
+        localStorage.setItem('discord_user', JSON.stringify({
+          name: userName,
+          avatar: avatarUrl
+        }));
 
-        if (loggedOutView) loggedOutView.style.display = 'none';
-        if (loggedInView) loggedInView.style.display = 'flex';
-        if (userAvatar) {
-          userAvatar.src = avatarUrl;
-          userAvatar.title = user.global_name || user.username;
-        }
-
-        if (typeof window.closeModal === 'function') {
-          window.closeModal('login');
-        }
-
+        showLoggedInUser(userName, avatarUrl);
         window.history.replaceState({}, document.title, window.location.pathname);
       })
       .catch(err => console.error("Błąd pobierania danych Discord:", err));
     }
+  } else {
+    // Sprawdzamy czy użytkownik jest już zalogowany przez Discorda
+    const savedUser = localStorage.getItem('discord_user');
+    if (savedUser) {
+      const user = JSON.parse(savedUser);
+      showLoggedInUser(user.name, user.avatar);
+    }
   }
 }
+
+// Pomocnicza funkcja do pokazywania zalogowanego użytkownika
+function showLoggedInUser(name, avatar) {
+  const loggedOutView = document.getElementById('logged-out-view');
+  const loggedInView = document.getElementById('logged-in-view');
+  const userAvatar = document.getElementById('user-avatar');
+
+  if (loggedOutView) loggedOutView.style.display = 'none';
+  if (loggedInView) loggedInView.style.display = 'flex';
+  if (userAvatar) {
+    userAvatar.src = avatar;
+    userAvatar.title = name;
+  }
+
+  if (typeof window.closeModal === 'function') {
+    window.closeModal('login');
+  }
+}
+
+// Funkcja wylogowania obsługująca również Discorda
+window.logout = function() {
+  // 1. Czyszczenie sesji Discorda
+  localStorage.removeItem('discord_user');
+
+  // 2. Wylogowanie z Firebase (jeśli użytkownik był zalogowany przez Google/Email)
+  if (typeof auth !== 'undefined' && auth.signOut) {
+    auth.signOut();
+  }
+
+  // 3. Przywrócenie widoku niezalogowanego
+  const loggedOutView = document.getElementById('logged-out-view');
+  const loggedInView = document.getElementById('logged-in-view');
+
+  if (loggedOutView) loggedOutView.style.display = 'flex';
+  if (loggedInView) loggedInView.style.display = 'none';
+
+  // Odświeżenie strony, aby wyczyścić stan
+  window.location.reload();
+};
 
 window.addEventListener('DOMContentLoaded', handleDiscordCallback);
 </script>
