@@ -140,9 +140,18 @@ updateStatus();setInterval(updateStatus,30000);
   }
 </style>
  <!-- Konfiguracja Firebase oraz obsługa logowania -->
+<!-- Konfiguracja Firebase oraz obsługa logowania -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
- import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
+  import { 
+    getAuth, 
+    signInWithPopup, 
+    GoogleAuthProvider, 
+    onAuthStateChanged, 
+    signOut, 
+    signInWithEmailAndPassword, 
+    createUserWithEmailAndPassword 
+  } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
 
   // Twoja konfiguracja z Firebase
   const firebaseConfig = {
@@ -162,44 +171,82 @@ updateStatus();setInterval(updateStatus,30000);
   window.loginWithGoogle = async function() {
     const provider = new GoogleAuthProvider();
     try {
-      const result = await signInWithPopup(auth, provider);
-      alert("Zalogowano pomyślnie jako: " + result.user.displayName);
-      closeModal();
+      await signInWithPopup(auth, provider);
     } catch (error) {
       alert("Błąd logowania Google: " + error.message);
     }
   };
- // Nasłuchiwanie stanu zalogowania
-onAuthStateChanged(auth, (user) => {
-  const loggedOutView = document.getElementById('logged-out-view');
-  const loggedInView = document.getElementById('logged-in-view');
-  const userAvatar = document.getElementById('user-avatar');
 
-  if (user) {
-    if (loggedOutView) loggedOutView.style.display = 'none';
-    if (loggedInView) loggedInView.style.display = 'flex';
+  // Logowanie i rejestracja e-mailem/hasłem
+  window.loginWithEmail = async function(event) {
+    if (event) event.preventDefault();
     
-    if (userAvatar) {
-      userAvatar.src = user.photoURL || 'https://via.placeholder.com/36';
-      userAvatar.title = user.displayName || user.email;
+    const emailInput = document.querySelector('#login-modal input[type="email"]') || 
+                       document.querySelector('#login-modal input[placeholder*="e-mail"]') || 
+                       document.querySelector('#login-modal input[type="text"]');
+    const passwordInput = document.querySelector('#login-modal input[type="password"]');
+
+    if (!emailInput || !passwordInput) {
+      alert("Nie znaleziono pól logowania.");
+      return;
     }
 
-    // Zamknięcie modalu po zalogowaniu
-    if (typeof closeModal === 'function') {
-      closeModal('login');
-    }
-  } else {
-    if (loggedOutView) loggedOutView.style.display = 'block';
-    if (loggedInView) loggedInView.style.display = 'none';
-  }
-});
+    const email = emailInput.value.trim();
+    const password = passwordInput.value;
 
-// Funkcja wylogowania
-window.logout = function() {
-  signOut(auth).then(() => {
-    console.log("Wylogowano pomyślnie");
+    if (!email || !password) {
+      alert("Wpisz e-mail oraz hasło!");
+      return;
+    }
+
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+    } catch (error) {
+      if (error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
+        try {
+          await createUserWithEmailAndPassword(auth, email, password);
+          alert("Utworzono nowe konto i zalogowano!");
+        } catch (createError) {
+          alert("Błąd rejestracji/logowania: " + createError.message);
+        }
+      } else {
+        alert("Błąd logowania: " + error.message);
+      }
+    }
+  };
+
+  // Funkcja wylogowania
+  window.logout = function() {
+    signOut(auth).then(() => {
+      console.log("Wylogowano pomyślnie");
+    });
+  };
+
+  // Nasłuchiwanie stanu zalogowania
+  onAuthStateChanged(auth, (user) => {
+    const loggedOutView = document.getElementById('logged-out-view');
+    const loggedInView = document.getElementById('logged-in-view');
+    const userAvatar = document.getElementById('user-avatar');
+
+    if (user) {
+      if (loggedOutView) loggedOutView.style.display = 'none';
+      if (loggedInView) loggedInView.style.display = 'flex';
+      
+      if (userAvatar) {
+        userAvatar.src = user.photoURL || 'https://via.placeholder.com/36';
+        userAvatar.title = user.displayName || user.email;
+      }
+
+      if (typeof window.closeModal === 'function') {
+        window.closeModal('login');
+      } else if (typeof closeModal === 'function') {
+        closeModal('login');
+      }
+    } else {
+      if (loggedOutView) loggedOutView.style.display = 'block';
+      if (loggedInView) loggedInView.style.display = 'none';
+    }
   });
-};
 </script>
 </body>
 </html>
