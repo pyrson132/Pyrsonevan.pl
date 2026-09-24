@@ -80,11 +80,11 @@ footer{border-top:1px solid #1d232d;padding:35px 22px;color:#7f8794;text-align:c
 </main>
 <footer>© 2026 Pyrsonevan.pl • Wszystko co piszesz jest zabezpieczone i widzimy tylko my.</footer>
 
-<div class="modal" id="modal"><div class="modal-box"><span class="close" onclick="closeModal()">×</span><h2 id="modalTitle">Logowanie</h2><p class="muted">To jest demonstracyjny formularz HTML. Prawdziwe Google/Discord OAuth wymaga backendu.</p><input placeholder="Nazwa użytkownika lub e-mail"><input type="password" placeholder="Hasło"><button class="btn btn-red" style="width:100%;margin-top:10px" onclick="alert('Demo: formularz został wysłany.')">Kontynuuj</button><button class="btn btn-dark" style="width:100%;margin-top:8px" onclick="alert('Demo: logowanie przez Discord wymaga konfiguracji OAuth.')">💬 Discord</button><button class="btn btn-dark" style="width:100%;margin-top:8px" onclick="alert('Demo: logowanie przez Google wymaga konfiguracji OAuth.')">G Google</button></div></div>
+<div class="modal" id="modal"><div class="modal-box"><span class="close" onclick="closeModal()">×</span><h2 id="modalTitle">Logowanie</h2><p class="muted">To jest demonstracyjny formularz HTML. Prawdziwe Google/Discord OAuth wymaga backendu.</p><input placeholder="Nazwa użytkownika lub e-mail"><input type="password" placeholder="Hasło"><button class="btn btn-red" style="width:100%;margin-top:10px" onclick="alert('Demo: formularz został wysłany.')">Kontynuuj</button><button class="btn btn-dark" style="width:100%;margin-top:8px" onclick="alert('Demo: logowanie przez Discord wymaga konfiguracji OAuth.')">💬 Discord</button><button class="btn btn-dark" style="width:100%;margin-top:8px" onclick="loginWithGoogle()">G Google</button></div></div>
 
 <script>
 const IP="pyrsonevan.pl";
-function copyIP(){navigator.clipboard?.writeText(IP);alert("Skopiowano IP: "+IP)}
+function copyIP(){navigator.clipboard?.writeText(IP);alert("Skopiowano IP: "+IP)}A
 function openModal(type){document.getElementById("modal").classList.add("show");document.getElementById("modalTitle").textContent=type==="login"?"Logowanie":"Rejestracja"}
 function closeModal(){document.getElementById("modal").classList.remove("show")}
 function buy(rank){alert("Wybrano rangę "+rank+". Podłącz tutaj swój system płatności.")}
@@ -139,5 +139,36 @@ updateStatus();setInterval(updateStatus,30000);
     max-height: 24px;
   }
 </style>
+ <!-- Konfiguracja Firebase oraz obsługa logowania -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+  import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
+
+  // Twoja konfiguracja z Firebase
+  const firebaseConfig = {
+    apiKey: "AIzaSyDHyGak3efgmaom7gOw9Dd8GEazmZog3Y0",
+    authDomain: "pyrsonevan.firebaseapp.com",
+    projectId: "pyrsonevan",
+    storageBucket: "pyrsonevan.firebasestorage.app",
+    messagingSenderId: "63446112747",
+    appId: "1:63446112747:web:d61677eebc09a69230a1ae"
+  };
+
+  // Inicjalizacja Firebase & Auth
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  // Funkcja logowania przez Google
+  window.loginWithGoogle = async function() {
+    const provider = new GoogleAuthProvider();
+    try {
+      const result = await signInWithPopup(auth, provider);
+      alert("Zalogowano pomyślnie jako: " + result.user.displayName);
+      closeModal();
+    } catch (error) {
+      alert("Błąd logowania Google: " + error.message);
+    }
+  };
+</script>
 </body>
 </html>
