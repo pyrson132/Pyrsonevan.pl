@@ -249,7 +249,7 @@ updateStatus();setInterval(updateStatus,30000);
     }
   });
 // ==========================================
-// OSTATECZNA INTEGRACJA DISCORDA
+// BEZPIECZNA INTEGRACJA DISCORDA
 // ==========================================
 const DISCORD_CLIENT_ID = '1552604316332851230';
 
@@ -260,21 +260,20 @@ window.loginWithDiscord = function() {
 };
 
 window.logout = function() {
-  localStorage.removeItem('discord_user');
-  localStorage.removeItem('discord_token');
-  
-  if (typeof auth !== 'undefined' && auth.signOut) {
-    auth.signOut();
-  }
-  
+  try {
+    localStorage.removeItem('discord_user');
+    localStorage.removeItem('discord_token');
+    if (typeof auth !== 'undefined' && auth.signOut) {
+      auth.signOut();
+    }
+  } catch (e) {}
   window.location.href = window.location.pathname;
 };
 
-// Funkcja natychmiast aplikująca widok
-function forceDiscordState() {
-  const savedUser = localStorage.getItem('discord_user');
-  if (savedUser) {
-    try {
+function applyState() {
+  try {
+    const savedUser = localStorage.getItem('discord_user');
+    if (savedUser) {
       const user = JSON.parse(savedUser);
       const loggedOutView = document.getElementById('logged-out-view');
       const loggedInView = document.getElementById('logged-in-view');
@@ -282,46 +281,48 @@ function forceDiscordState() {
 
       if (loggedOutView) loggedOutView.style.setProperty('display', 'none', 'important');
       if (loggedInView) loggedInView.style.setProperty('display', 'flex', 'important');
-      if (userAvatar) {
+      if (userAvatar && user.avatar) {
         userAvatar.src = user.avatar;
-        userAvatar.title = user.name;
+        userAvatar.title = user.name || '';
       }
-    } catch (e) {
-      localStorage.removeItem('discord_user');
     }
+  } catch (e) {
+    console.error("Błąd stanu Discord:", e);
   }
 }
 
-// Wywołaj od razu przy parsowaniu skryptu na dole strony
-forceDiscordState();
+// Uruchomienie od razu
+applyState();
 
-// Oraz po powrocie z Discorda z tokenem
+// Obsługa powrotu z tokenem
 window.addEventListener('DOMContentLoaded', () => {
-  const hash = window.location.hash;
-  if (hash.includes('access_token=')) {
-    const params = new URLSearchParams(hash.substring(1));
-    const token = params.get('access_token');
+  try {
+    const hash = window.location.hash;
+    if (hash && hash.includes('access_token=')) {
+      const params = new URLSearchParams(hash.substring(1));
+      const token = params.get('access_token');
 
-    if (token) {
-      fetch('https://discord.com/api/v10/users/@me', {
-        headers: { authorization: `Bearer ${token}` }
-      })
-      .then(res => res.json())
-      .then(user => {
-        const avatarUrl = user.avatar 
-          ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`
-          : 'https://via.placeholder.com/36';
-        const userName = user.global_name || user.username;
+      if (token) {
+        fetch('https://discord.com/api/v10/users/@me', {
+          headers: { authorization: `Bearer ${token}` }
+        })
+        .then(res => res.json())
+        .then(user => {
+          const avatarUrl = user.avatar 
+            ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`
+            : 'https://via.placeholder.com/36';
+          const userName = user.global_name || user.username;
 
-        localStorage.setItem('discord_user', JSON.stringify({ name: userName, avatar: avatarUrl }));
-        localStorage.setItem('discord_token', token);
-        
-        forceDiscordState();
-        window.history.replaceState({}, document.title, window.location.pathname);
-      })
-      .catch(err => console.error("Błąd Discord:", err));
+          localStorage.setItem('discord_user', JSON.stringify({ name: userName, avatar: avatarUrl }));
+          localStorage.setItem('discord_token', token);
+          
+          applyState();
+          window.history.replaceState({}, document.title, window.location.pathname);
+        })
+        .catch(err => console.error("Błąd Discord API:", err));
+      }
     }
-  }
+  } catch (e) {}
 });
 </script>
 </body>
