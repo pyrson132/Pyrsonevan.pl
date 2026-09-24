@@ -256,8 +256,7 @@ updateStatus();setInterval(updateStatus,30000);
   });
 <script>
 window.addEventListener('DOMContentLoaded', () => {
-  const isLogged = localStorage.getItem('is_logged_in');
-  if (isLogged === 'true') {
+  if (localStorage.getItem('is_logged_in') === 'true') {
     transformLoginButton();
   }
 });
@@ -265,9 +264,11 @@ window.addEventListener('DOMContentLoaded', () => {
 function handleLogin() {
   localStorage.setItem('is_logged_in', 'true');
   
-  if (typeof closeModal === 'function') {
-    closeModal('login');
-  }
+  // Zamknij okno modalne
+  document.querySelectorAll('.modal').forEach(m => {
+    m.style.display = 'none';
+    m.classList.remove('show');
+  });
   
   transformLoginButton();
 }
