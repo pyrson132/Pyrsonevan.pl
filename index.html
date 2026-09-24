@@ -249,7 +249,7 @@ updateStatus();setInterval(updateStatus,30000);
     }
   });
 // ==========================================
-// POPRAWIONY SKRYPT DISCORDA (TRWAŁA SESJA)
+// OSTATECZNA INTEGRACJA DISCORDA
 // ==========================================
 const DISCORD_CLIENT_ID = '1552604316332851230';
 
@@ -270,24 +270,34 @@ window.logout = function() {
   window.location.href = window.location.pathname;
 };
 
-// Funkcja przywracająca widok zalogowanego użytkownika
-function applyDiscordSession(name, avatarUrl) {
-  const loggedOutView = document.getElementById('logged-out-view');
-  const loggedInView = document.getElementById('logged-in-view');
-  const userAvatar = document.getElementById('user-avatar');
+// Funkcja natychmiast aplikująca widok
+function forceDiscordState() {
+  const savedUser = localStorage.getItem('discord_user');
+  if (savedUser) {
+    try {
+      const user = JSON.parse(savedUser);
+      const loggedOutView = document.getElementById('logged-out-view');
+      const loggedInView = document.getElementById('logged-in-view');
+      const userAvatar = document.getElementById('user-avatar');
 
-  if (loggedOutView) loggedOutView.style.display = 'none';
-  if (loggedInView) loggedInView.style.display = 'flex';
-  if (userAvatar) {
-    userAvatar.src = avatarUrl;
-    userAvatar.title = name;
+      if (loggedOutView) loggedOutView.style.setProperty('display', 'none', 'important');
+      if (loggedInView) loggedInView.style.setProperty('display', 'flex', 'important');
+      if (userAvatar) {
+        userAvatar.src = user.avatar;
+        userAvatar.title = user.name;
+      }
+    } catch (e) {
+      localStorage.removeItem('discord_user');
+    }
   }
 }
 
-// 1. Obsługa powrotu z Discorda z tokenem w URL
+// Wywołaj od razu przy parsowaniu skryptu na dole strony
+forceDiscordState();
+
+// Oraz po powrocie z Discorda z tokenem
 window.addEventListener('DOMContentLoaded', () => {
   const hash = window.location.hash;
-
   if (hash.includes('access_token=')) {
     const params = new URLSearchParams(hash.substring(1));
     const token = params.get('access_token');
@@ -303,30 +313,15 @@ window.addEventListener('DOMContentLoaded', () => {
           : 'https://via.placeholder.com/36';
         const userName = user.global_name || user.username;
 
-        // Zapisujemy w pamięci
         localStorage.setItem('discord_user', JSON.stringify({ name: userName, avatar: avatarUrl }));
+        localStorage.setItem('discord_token', token);
         
-        applyDiscordSession(userName, avatarUrl);
+        forceDiscordState();
         window.history.replaceState({}, document.title, window.location.pathname);
       })
       .catch(err => console.error("Błąd Discord:", err));
     }
   }
-});
-
-// 2. Obsługa ponownego wejścia na stronę (z opóźnieniem, aby przetrwać konflikt z Firebase)
-window.addEventListener('load', () => {
-  setTimeout(() => {
-    const savedUser = localStorage.getItem('discord_user');
-    if (savedUser) {
-      try {
-        const user = JSON.parse(savedUser);
-        applyDiscordSession(user.name, user.avatar);
-      } catch (e) {
-        localStorage.removeItem('discord_user');
-      }
-    }
-  }, 300); // Małe opóźnienie (300ms) daje czas Firebase na ostateczne ustalenie stanu, po czym nasz skrypt wymusza poprawny widok
 });
 </script>
 </body>
