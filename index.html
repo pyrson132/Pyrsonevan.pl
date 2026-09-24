@@ -86,14 +86,14 @@ footer{border-top:1px solid #1d232d;padding:35px 22px;color:#7f8794;text-align:c
 </main>
 <footer>© 2026 Pyrsonevan.pl • Wszystko co piszesz jest zabezpieczone i widzimy tylko my.</footer>
 <div class="modal" id="modal">
-  <div class="modal-box">
+  <div class="modal-box" style="position: relative; z-index: 9999;">
     <span class="close" onclick="closeModal()"></span>
     <h2 id="modalTitle">Logowanie</h2>
     <p class="muted">Wprowadź dane, aby kontynuować.</p>
     <input id="emailInput" type="text" placeholder="Email lub login" style="width:100%; padding:10px; margin-top:10px; background:#1e1e1e; border:1px solid #333; color:#fff; border-radius:5px;">
     <input id="passwordInput" type="password" placeholder="Hasło" style="width:100%; padding:10px; margin-top:10px; background:#1e1e1e; border:1px solid #333; color:#fff; border-radius:5px;">
-    <button id="continue-btn" class="btn btn-red" style="width:100%; margin-top:10px;">Kontynuuj</button>
-    <button id="google-btn" class="btn btn-dark" style="width:100%; margin-top:8px;">G Google</button>
+    <button class="btn btn-red" style="width:100%; margin-top:10px; cursor:pointer; position:relative; z-index:10000;" onclick="alert('Kliknięto Kontynuuj!'); handleLogin();">Kontynuuj</button>
+    <button class="btn btn-dark" style="width:100%; margin-top:8px; cursor:pointer; position:relative; z-index:10000;" onclick="alert('Kliknięto Google!'); handleLogin();">G Google</button>
   </div>
 </div>
 <script>
