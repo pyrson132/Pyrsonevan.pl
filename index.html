@@ -50,7 +50,15 @@ footer{border-top:1px solid #1d232d;padding:35px 22px;color:#7f8794;text-align:c
             <a href="#regulamin">Regulamin</a>
             <a href="#kontakt">Kontakt</a>
         </nav>
-      <button id="login-btn" class="btn btn-dark" onclick="openModal('login')">Zaloguj</button>
+        
+        <!-- Kontener na przyciski uwierzytelniania -->
+        <div id="auth-container">
+            <button id="login-btn" class="btn btn-dark" onclick="openModal('login')">Zaloguj</button>
+            <div id="user-panel" style="display: none; align-items: center; gap: 8px;">
+                <div style="width: 32px; height: 32px; background: #e53935; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: bold; font-size: 14px;" title="Zalogowany">U</div>
+                <button class="btn btn-dark" onclick="logoutUser()" style="padding: 6px 12px; font-size: 13px; cursor: pointer;">Wyloguj</button>
+            </div>
+        </div>
     </div>
 </header>
 <main>
@@ -182,10 +190,7 @@ updateStatus();setInterval(updateStatus,30000);
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
 
-  // Udostępnienie funkcji globalnie dla zwykłych skryptów
   window.firebaseAuthInstance = auth;
-  window.GoogleAuthProvider = GoogleAuthProvider;
-  window.signInWithPopup = signInWithPopup;
   window.signInWithEmailAndPassword = signInWithEmailAndPassword;
   window.createUserWithEmailAndPassword = createUserWithEmailAndPassword;
 
@@ -198,22 +203,26 @@ updateStatus();setInterval(updateStatus,30000);
     }
   };
 
+  // Prawdziwe wylogowanie z Firebase
   window.logoutUser = function() {
     signOut(auth).then(() => {
       localStorage.removeItem('is_logged_in');
-      window.location.reload();
+      showLoggedOutState();
     }).catch((error) => {
       console.error("Błąd wylogowania:", error);
       localStorage.removeItem('is_logged_in');
-      window.location.reload();
+      showLoggedOutState();
     });
   };
 
   onAuthStateChanged(auth, (user) => {
     if (user) {
       localStorage.setItem('is_logged_in', 'true');
-      transformLoginButton();
+      showLoggedInState();
       try { closeModal(); } catch(e) {}
+    } else {
+      localStorage.removeItem('is_logged_in');
+      showLoggedOutState();
     }
   });
 </script>
@@ -221,7 +230,9 @@ updateStatus();setInterval(updateStatus,30000);
 <script>
   window.addEventListener('DOMContentLoaded', () => {
     if (localStorage.getItem('is_logged_in') === 'true') {
-      transformLoginButton();
+      showLoggedInState();
+    } else {
+      showLoggedOutState();
     }
   });
 
@@ -234,7 +245,6 @@ updateStatus();setInterval(updateStatus,30000);
       return;
     }
 
-    // Próba logowania przez Firebase, a jeśli konto nie istnieje – jego utworzenie
     try {
       if (window.firebaseAuthInstance && window.signInWithEmailAndPassword) {
         try {
@@ -244,16 +254,12 @@ updateStatus();setInterval(updateStatus,30000);
         }
       }
     } catch (error) {
-      console.log("Błąd autoryzacji Firebase:", error.message);
+      console.log("Autoryzacja:", error.message);
     }
 
     localStorage.setItem('is_logged_in', 'true');
     
-    try {
-      if (typeof closeModal === 'function') {
-        closeModal();
-      }
-    } catch (e) {}
+    try { closeModal(); } catch (e) {}
 
     const modal = document.getElementById('modal');
     if (modal) {
@@ -261,19 +267,22 @@ updateStatus();setInterval(updateStatus,30000);
       modal.classList.remove('show');
     }
     
-    transformLoginButton();
+    showLoggedInState();
   }
 
-  function transformLoginButton() {
+  // Funkcje do bezpiecznego przełączania widoku przycisków bez podmieniania HTML
+  function showLoggedInState() {
     const loginBtn = document.getElementById('login-btn');
-    if (!loginBtn) return;
+    const userPanel = document.getElementById('user-panel');
+    if (loginBtn) loginBtn.style.display = 'none';
+    if (userPanel) userPanel.style.display = 'flex';
+  }
 
-    loginBtn.outerHTML = `
-      <div id="login-btn" style="display: inline-flex; align-items: center; gap: 8px;">
-        <div style="width: 32px; height: 32px; background: #e53935; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: bold; font-size: 14px;" title="Zalogowany">U</div>
-        <button class="btn btn-dark" onclick="logoutUser()" style="padding: 6px 12px; font-size: 13px; cursor: pointer;">Wyloguj</button>
-      </div>
-    `;
+  function showLoggedOutState() {
+    const loginBtn = document.getElementById('login-btn');
+    const userPanel = document.getElementById('user-panel');
+    if (loginBtn) loginBtn.style.display = 'inline-flex';
+    if (userPanel) userPanel.style.display = 'none';
   }
 </script>
 </body>
