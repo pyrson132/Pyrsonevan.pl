@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title></title> Pyrsonevan — Serwer Minecraft - lifesteal </title>
+<title>Pyrsonevan.pl — Serwer Minecraft - lifesteal</title>
 <meta name="description" content="tutaj zagrasz na Pyrksonevan.pl — nowoczesny serwer Minecraft.">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -53,9 +53,10 @@ footer{border-top:1px solid #1d232d;padding:35px 22px;color:#7f8794;text-align:c
       <button id="login-btn" class="btn btn-dark" onclick="openModal('login')">Zaloguj</button>
     </div>
 </header>
+<main>
 <section class="hero"><div class="hero-content">
 <div class="badge">⚔️ NOWOCZESNY SERWER MINECRAFT</div>
-<h1>Witaj na <span> Pyrsonevan.pl </span></h1>
+<h1>Witaj na <span>Pyrsonevan.pl</span></h1>
 <p>Dołącz do naszej społeczności, poznaj nowych graczy i baw się na wyjątkowym serwerze Minecraft.</p>
 <div class="actions"><button class="btn btn-red" onclick="copyIP()">🎮 Kopiuj IP serwera</button><a class="btn btn-dark" href="https://discord.gg/yFUtvmZVt" target="_blank">💬 Dołącz na Discord</a></div>
 <div class="server-box"><div><div class="status"><i class="dot" id="dot"></i><span id="status">Sprawdzanie statusu...</span></div><div class="ip">pyrsonevan.pl</div><div class="muted">Minecraft Java • 1.21.4+</div></div><div><strong id="players">--</strong><div class="muted">graczy online</div></div></div>
@@ -85,6 +86,7 @@ footer{border-top:1px solid #1d232d;padding:35px 22px;color:#7f8794;text-align:c
 <section id="kontakt"><div class="wrap"><div class="section-head"><h2>Kontakt</h2><p>Potrzebujesz pomocy? Jesteśmy na Discordzie.</p></div><div style="text-align:center"><a class="btn btn-red" href="https://discord.gg/yFUtvmZVt" target="_blank">💬 Otwórz Discord</a></div></div></section>
 </main>
 <footer>© 2026 Pyrsonevan.pl • Wszystko co piszesz jest zabezpieczone i widzimy tylko my.</footer>
+
 <div class="modal" id="modal">
   <div class="modal-box" style="position: relative; z-index: 9999;">
     <span class="close" onclick="closeModal()"></span>
@@ -93,15 +95,17 @@ footer{border-top:1px solid #1d232d;padding:35px 22px;color:#7f8794;text-align:c
     <input id="emailInput" type="text" placeholder="Email lub login" style="width:100%; padding:10px; margin-top:10px; background:#1e1e1e; border:1px solid #333; color:#fff;">
     <input id="passwordInput" type="password" placeholder="Hasło" style="width:100%; padding:10px; margin-top:10px; background:#1e1e1e; border:1px solid #333; color:#fff;">
     <button class="btn btn-red" style="width:100%; margin-top:10px; cursor:pointer;" onclick="handleLogin()">Kontynuuj</button>
-    <button class="btn btn-dark" style="width:100%; margin-top:8px; cursor:pointer;" onclick="handleLogin()">G Google</button>
+    <button class="btn btn-dark" style="width:100%; margin-top:8px; cursor:pointer;" onclick="loginWithGoogle()">G Google</button>
   </div>
 </div>
+
 <script>
 const IP="pyrsonevan.pl";
 function copyIP(){navigator.clipboard?.writeText(IP);alert("Skopiowano IP: "+IP)}
 function openModal(type){document.getElementById("modal").classList.add("show");document.getElementById("modalTitle").textContent=type==="login"?"Logowanie":"Rejestracja"}
 function closeModal(){document.getElementById("modal").classList.remove("show")}
 function buy(rank){alert("Wybrano rangę "+rank+". Podłącz tutaj swój system płatności.")}
+
 async function updateStatus(){
  try{
   const r=await fetch("https://api.mcsrvstat.us/3/"+IP);
@@ -116,7 +120,8 @@ async function updateStatus(){
 }
 updateStatus();setInterval(updateStatus,30000);
 </script>
-<!-- Licznik odwiedzin po prawej stronie (zresetowany) -->
+
+<!-- Licznik odwiedzin po prawej stronie -->
 <div id="counter-box">
   <span class="counter-label">Liczba odwiedzin</span>
   <span id="visit-count">
@@ -138,7 +143,6 @@ updateStatus();setInterval(updateStatus,30000);
     text-align: center;
     z-index: 9999;
   }
-
   .counter-label {
     display: block;
     font-size: 11px;
@@ -146,18 +150,17 @@ updateStatus();setInterval(updateStatus,30000);
     color: #a0a0a0;
     margin-bottom: 6px;
   }
-
   #visit-count img {
     display: block;
     margin: 0 auto;
     max-height: 24px;
   }
 </style>
- <!-- Konfiguracja Firebase oraz obsługa logowania -->
+
 <!-- Konfiguracja Firebase oraz obsługa logowania -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
-  import { 
+  import {  
     getAuth, 
     signInWithPopup, 
     GoogleAuthProvider, 
@@ -167,7 +170,6 @@ updateStatus();setInterval(updateStatus,30000);
     createUserWithEmailAndPassword 
   } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
 
-  // Twoja konfiguracja z Firebase
   const firebaseConfig = {
     apiKey: "AIzaSyDHyGak3efgmaom7gOw9Dd8GEazmZog3Y0",
     authDomain: "pyrsonevan.firebaseapp.com",
@@ -177,11 +179,9 @@ updateStatus();setInterval(updateStatus,30000);
     appId: "1:63446112747:web:d61677eebc09a69230a1ae"
   };
 
-  // Inicjalizacja Firebase & Auth
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
 
-  // Funkcja logowania przez Google
   window.loginWithGoogle = async function() {
     const provider = new GoogleAuthProvider();
     try {
@@ -191,143 +191,71 @@ updateStatus();setInterval(updateStatus,30000);
     }
   };
 
-// Logowanie i rejestracja e-mailem/hasłem
-  window.loginWithEmail = async function(event) {
-    if (event) event.preventDefault();
-
-    const emailInput = document.querySelector('input[type="email"]') || 
-                       document.querySelector('input[placeholder*="e-mail"]') || 
-                       document.querySelector('input[placeholder*="Nazwa"]') ||
-                       document.querySelector('input[type="text"]');
-                       
-    const passwordInput = document.querySelector('input[type="password"]');
-    if (!emailInput || !passwordInput) {
-      alert("Nie znaleziono pól logowania.");
-      return;
-    }
-
-    const email = emailInput.value.trim();
-    const password = passwordInput.value;
-
-    if (!email || !password) {
-      alert("Wpisz e-mail oraz hasło!");
-      return;
-    }
-
-    try {
-      await signInWithEmailAndPassword(auth, email, password);
-    } catch (error) {
-      if (error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
-        try {
-          await createUserWithEmailAndPassword(auth, email, password);
-          alert("Utworzono nowe konto i zalogowano!");
-        } catch (createError) {
-          alert("Błąd rejestracji/logowania: " + createError.message);
-        }
-      } else {
-        alert("Błąd logowania: " + error.message);
-      }
-    }
-  };
-
-  // Funkcja wylogowania
   window.logout = function() {
     signOut(auth).then(() => {
-      console.log("Wylogowano pomyślnie");
+      localStorage.removeItem('is_logged_in');
+      window.location.reload();
     });
   };
 
-  // Nasłuchiwanie stanu zalogowania
   onAuthStateChanged(auth, (user) => {
-    const loggedOutView = document.getElementById('logged-out-view');
-    const loggedInView = document.getElementById('logged-in-view');
-    const userAvatar = document.getElementById('user-avatar');
-
     if (user) {
-      if (loggedOutView) loggedOutView.style.display = 'none';
-      if (loggedInView) loggedInView.style.display = 'flex';
-      
-    if (userAvatar) {
-            userAvatar.src = user.photoURL || 'https://via.placeholder.com/36';
-            userAvatar.title = user.displayName || user.email;
-          }
-        }
-      }); // <-- TUTAJ ZAMYKAMY POPRZEDNI BLOK onAuthStateChanged
-
-      // --- NASZ BEZPIECZNY KOD LOGOWANIA ---
-      window.addEventListener('DOMContentLoaded', () => {
-        if (localStorage.getItem('is_logged_in') === 'true') {
-          transformLoginButton();
-        }
-      });
-
-      function handleLogin() {
-        localStorage.setItem('is_logged_in', 'true');
-        
-        try {
-          if (typeof closeModal === 'function') {
-            closeModal();
-          }
-        } catch (e) {}
-
-        const modal = document.getElementById('modal');
-        if (modal) {
-          modal.style.display = 'none';
-          modal.classList.remove('show');
-        }
-        
-        transformLoginButton();
-      }
-
-      function transformLoginButton() {
-        const loginBtn = document.getElementById('login-btn');
-        if (!loginBtn) return;
-
-        loginBtn.outerHTML = `
-          <div id="login-btn" style="display: inline-flex; align-items: center; gap: 8px;">
-            <div style="width: 32px; height: 32px; background: #e53935; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: bold; font-size: 14px;" title="Zalogowany">U</div>
-            <button class="btn btn-dark" onclick="logoutUser()" style="padding: 6px 12px; font-size: 13px;">Wyloguj</button>
-          </div>
-        `;
-      }
-
-      function logoutUser() {
-        localStorage.removeItem('is_logged_in');
-        window.location.reload();
-      }
-function handleLogin() {
-  localStorage.setItem('is_logged_in', 'true');
-  
-  try {
-    if (typeof closeModal === 'function') {
-      closeModal();
+      localStorage.setItem('is_logged_in', 'true');
+      transformLoginButton();
+      try { closeModal(); } catch(e) {}
     }
-  } catch (e) {}
+  });
+</script>
 
-  const modal = document.getElementById('modal');
-  if (modal) {
-    modal.style.display = 'none';
-    modal.classList.remove('show');
+<script>
+  window.addEventListener('DOMContentLoaded', () => {
+    if (localStorage.getItem('is_logged_in') === 'true') {
+      transformLoginButton();
+    }
+  });
+
+  function handleLogin() {
+    const email = document.getElementById('emailInput').value.trim();
+    const password = document.getElementById('passwordInput').value;
+
+    if (!email || !password) {
+      alert("Wpisz email oraz hasło!");
+      return;
+    }
+
+    localStorage.setItem('is_logged_in', 'true');
+    
+    try {
+      if (typeof closeModal === 'function') {
+        closeModal();
+      }
+    } catch (e) {}
+
+    const modal = document.getElementById('modal');
+    if (modal) {
+      modal.style.display = 'none';
+      modal.classList.remove('show');
+    }
+    
+    transformLoginButton();
   }
-  
-  transformLoginButton();
-}
 
-function transformLoginButton() {
-  const loginBtn = document.getElementById('login-btn');
-  if (!loginBtn) return;
+  function transformLoginButton() {
+    const loginBtn = document.getElementById('login-btn');
+    if (!loginBtn) return;
 
-  loginBtn.outerHTML = `
-    <div id="login-btn" style="display: inline-flex; align-items: center; gap: 8px;">
-      <div style="width: 32px; height: 32px; background: #e53935; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: bold; font-size: 14px;" title="Zalogowany">U</div>
-      <button class="btn btn-dark" onclick="logoutUser()" style="padding: 6px 12px; font-size: 13px;">Wyloguj</button>
-    </div>
-  `;
-}
+    loginBtn.outerHTML = `
+      <div id="login-btn" style="display: inline-flex; align-items: center; gap: 8px;">
+        <div style="width: 32px; height: 32px; background: #e53935; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: bold; font-size: 14px;" title="Zalogowany">U</div>
+        <button class="btn btn-dark" onclick="logoutUser()" style="padding: 6px 12px; font-size: 13px;">Wyloguj</button>
+      </div>
+    `;
+  }
 
-function logoutUser() {
-  localStorage.removeItem('is_logged_in');
-  window.location.reload();
-}
+  function logoutUser() {
+    localStorage.removeItem('is_logged_in');
+    window.location.reload();
+  }
+</script>
 </body>
 </html>
