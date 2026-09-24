@@ -92,10 +92,10 @@ footer{border-top:1px solid #1d232d;padding:35px 22px;color:#7f8794;text-align:c
     <p class="muted">Wprowadź dane, aby kontynuować.</p>
     <input id="emailInput" type="text" placeholder="Email lub login" style="width:100%; padding:10px; margin-top:10px; background:#1e1e1e; border:1px solid #333; color:#fff; border-radius:5px;">
     <input id="passwordInput" type="password" placeholder="Hasło" style="width:100%; padding:10px; margin-top:10px; background:#1e1e1e; border:1px solid #333; color:#fff; border-radius:5px;">
-    <button class="btn btn-red" style="width:100%; margin-top:10px;" onclick="handleLogin()">Kontynuuj</button>
-    <button class="btn btn-dark" style="width:100%; margin-top:8px;" onclick="handleLogin()">G Google</button>
+    <button id="continue-btn" class="btn btn-red" style="width:100%; margin-top:10px;">Kontynuuj</button>
+    <button id="google-btn" class="btn btn-dark" style="width:100%; margin-top:8px;">G Google</button>
   </div>
-</div>  
+</div>
 <script>
 const IP="pyrsonevan.pl";
 function copyIP(){navigator.clipboard?.writeText(IP);alert("Skopiowano IP: "+IP)}
@@ -263,20 +263,18 @@ updateStatus();setInterval(updateStatus,30000);
     }
   });
 <script>
-window.addEventListener('DOMContentLoaded', () => {
-  if (localStorage.getItem('is_logged_in') === 'true') {
-    transformLoginButton();
-  }
-});
-
 function handleLogin() {
   localStorage.setItem('is_logged_in', 'true');
   
-  // Używamy oryginalnej funkcji zamykającej Twojej strony, jeśli istnieje
+  // Zamknij okno modalne
   if (typeof closeModal === 'function') {
     closeModal();
   } else {
-    document.getElementById('modal').classList.remove('show');
+    const modal = document.getElementById('modal');
+    if (modal) {
+      modal.style.display = 'none';
+      modal.classList.remove('show');
+    }
   }
   
   transformLoginButton();
@@ -298,6 +296,23 @@ function logoutUser() {
   localStorage.removeItem('is_logged_in');
   window.location.reload();
 }
+
+window.addEventListener('DOMContentLoaded', () => {
+  if (localStorage.getItem('is_logged_in') === 'true') {
+    transformLoginButton();
+  }
+
+  // Bezpieczne przypisanie zdarzeń do przycisków logowania
+  const continueBtn = document.getElementById('continue-btn');
+  if (continueBtn) {
+    continueBtn.addEventListener('click', handleLogin);
+  }
+
+  const googleBtn = document.getElementById('google-btn');
+  if (googleBtn) {
+    googleBtn.addEventListener('click', handleLogin);
+  }
+});
 </script>
 </body>
 </html>
