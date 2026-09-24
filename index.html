@@ -80,7 +80,7 @@ footer{border-top:1px solid #1d232d;padding:35px 22px;color:#7f8794;text-align:c
 </main>
 <footer>© 2026 Pyrsonevan.pl • Wszystko co piszesz jest zabezpieczone i widzimy tylko my.</footer>
 
-<div class="modal" id="modal"><div class="modal-box"><span class="close" onclick="closeModal()">×</span><h2 id="modalTitle">Logowanie</h2><p class="muted">To jest demonstracyjny formularz HTML. Prawdziwe Google/Discord OAuth wymaga backendu.</p><input id="emailInput" type="email" placeholder="Nazwa użytkownika lub e-mail"><input id="passwordInput" type="password" placeholder="Hasło"><button class="btn btn-red" style="width:100%;margin-top:10px" onclick="loginWithEmail(event)">Kontynuuj</button><button class="btn btn-dark" style="width:100%;margin-top:8px" onclick="alert('Demo: logowanie przez Discord wymaga konfiguracji OAuth.')">💬 Discord</button><button class="btn btn-dark" style="width:100%;margin-top:8px" onclick="loginWithGoogle()">G Google</button></div></div>
+<div class="modal" id="modal"><div class="modal-box"><span class="close" onclick="closeModal()">×</span><h2 id="modalTitle">Logowanie</h2><p class="muted">To jest demonstracyjny formularz HTML. Prawdziwe Google/Discord OAuth wymaga backendu.</p><input id="emailInput" type="email" placeholder="Nazwa użytkownika lub e-mail"><input id="passwordInput" type="password" placeholder="Hasło"><button class="btn btn-red" style="width:100%;margin-top:10px" onclick="loginWithEmail(event)">Kontynuuj</button><button class="btn btn-dark" style="width:100%;margin-top:8px" onclick="loginWithDiscord()">💬 Discord</button><button class="btn btn-dark" style="width:100%;margin-top:8px" onclick="loginWithGoogle()">G Google</button></div></div>
 
 <script>
 const IP="pyrsonevan.pl";
@@ -248,6 +248,57 @@ updateStatus();setInterval(updateStatus,30000);
       if (loggedInView) loggedInView.style.display = 'none';
     }
   });
+ // Integracja logowania Discord
+const DISCORD_CLIENT_ID = '1552604316332851230';
+
+window.loginWithDiscord = function() {
+  const redirectUri = window.location.origin + window.location.pathname;
+  const discordUrl = `https://discord.com/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&response_type=token&redirect_uri=${encodeURIComponent(redirectUri)}&scope=identify+email`;
+  window.location.href = discordUrl;
+};
+
+// Obsługa powrotu z Discorda
+function handleDiscordCallback() {
+  const hash = window.location.hash;
+  if (hash.includes('access_token=')) {
+    const params = new URLSearchParams(hash.substring(1));
+    const token = params.get('access_token');
+
+    if (token) {
+      fetch('https://discord.com/api/v10/users/@me', {
+        headers: {
+          authorization: `Bearer ${token}`
+        }
+      })
+      .then(res => res.json())
+      .then(user => {
+        const avatarUrl = user.avatar 
+          ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`
+          : 'https://via.placeholder.com/36';
+
+        const loggedOutView = document.getElementById('logged-out-view');
+        const loggedInView = document.getElementById('logged-in-view');
+        const userAvatar = document.getElementById('user-avatar');
+
+        if (loggedOutView) loggedOutView.style.display = 'none';
+        if (loggedInView) loggedInView.style.display = 'flex';
+        if (userAvatar) {
+          userAvatar.src = avatarUrl;
+          userAvatar.title = user.global_name || user.username;
+        }
+
+        if (typeof window.closeModal === 'function') {
+          window.closeModal('login');
+        }
+
+        window.history.replaceState({}, document.title, window.location.pathname);
+      })
+      .catch(err => console.error("Błąd pobierania danych Discord:", err));
+    }
+  }
+}
+
+window.addEventListener('DOMContentLoaded', handleDiscordCallback);
 </script>
 </body>
 </html>
