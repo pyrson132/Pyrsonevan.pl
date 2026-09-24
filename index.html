@@ -95,7 +95,7 @@ footer{border-top:1px solid #1d232d;padding:35px 22px;color:#7f8794;text-align:c
     <button class="btn btn-red" style="width:100%; margin-top:10px;" onclick="handleLogin()">Kontynuuj</button>
     <button class="btn btn-dark" style="width:100%; margin-top:8px;" onclick="handleLogin()">G Google</button>
   </div>
-</div>
+</div>  
 <script>
 const IP="pyrsonevan.pl";
 function copyIP(){navigator.clipboard?.writeText(IP);alert("Skopiowano IP: "+IP)}
@@ -272,11 +272,12 @@ window.addEventListener('DOMContentLoaded', () => {
 function handleLogin() {
   localStorage.setItem('is_logged_in', 'true');
   
-  // Zamknij okno modalne
-  document.querySelectorAll('.modal').forEach(m => {
-    m.style.display = 'none';
-    m.classList.remove('show');
-  });
+  // Używamy oryginalnej funkcji zamykającej Twojej strony, jeśli istnieje
+  if (typeof closeModal === 'function') {
+    closeModal();
+  } else {
+    document.getElementById('modal').classList.remove('show');
+  }
   
   transformLoginButton();
 }
