@@ -43,7 +43,7 @@ footer{border-top:1px solid #1d232d;padding:35px 22px;color:#7f8794;text-align:c
 <header><div class="nav">
 <a class="logo" href="#start">Pyrso<span>nevan.pl</span></a>
 <nav><a href="#start">Start</a><a href="#rangi">Rangi</a><a href="#statystyki">Statystyki</a><a href="#regulamin">Regulamin</a><a href="#kontakt">Kontakt</a></nav>
-<div style="display:flex;gap:8px"><button class="btn btn-dark" onclick="openModal('login')">Zaloguj nie dziala tymczasowo</button><a class="btn btn-red" href="#rangi">Sklep</a></div>
+<div style="display:flex;gap:8px;align-items:center;"><div id="logged-out-view"><button class="btn btn-dark" onclick="openModal('login')">Zaloguj</button></div><div id="logged-in-view" style="display: none; align-items: center; gap: 10px;"><img id="user-avatar" src="" alt="Profil" style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover; border: 2px solid #ef2b2d;" /><button onclick="logout()" class="btn btn-sm btn-dark">Wyloguj</button></div><a class="btn btn-red" href="#rangi">Sklep</a></div>
 </div></header>
 
 <main id="start">
