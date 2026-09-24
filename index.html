@@ -142,7 +142,7 @@ updateStatus();setInterval(updateStatus,30000);
  <!-- Konfiguracja Firebase oraz obsługa logowania -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
-  import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
+  import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
 
   // Twoja konfiguracja z Firebase
   const firebaseConfig = {
@@ -169,6 +169,37 @@ updateStatus();setInterval(updateStatus,30000);
       alert("Błąd logowania Google: " + error.message);
     }
   };
+ // Nasłuchiwanie stanu zalogowania
+onAuthStateChanged(auth, (user) => {
+  const loggedOutView = document.getElementById('logged-out-view');
+  const loggedInView = document.getElementById('logged-in-view');
+  const userAvatar = document.getElementById('user-avatar');
+
+  if (user) {
+    if (loggedOutView) loggedOutView.style.display = 'none';
+    if (loggedInView) loggedInView.style.display = 'flex';
+    
+    if (userAvatar) {
+      userAvatar.src = user.photoURL || 'https://via.placeholder.com/36';
+      userAvatar.title = user.displayName || user.email;
+    }
+
+    // Zamknięcie modalu po zalogowaniu
+    if (typeof closeModal === 'function') {
+      closeModal('login');
+    }
+  } else {
+    if (loggedOutView) loggedOutView.style.display = 'block';
+    if (loggedInView) loggedInView.style.display = 'none';
+  }
+});
+
+// Funkcja wylogowania
+window.logout = function() {
+  signOut(auth).then(() => {
+    console.log("Wylogowano pomyślnie");
+  });
+};
 </script>
 </body>
 </html>
