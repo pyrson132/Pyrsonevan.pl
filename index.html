@@ -43,14 +43,9 @@ footer{border-top:1px solid #1d232d;padding:35px 22px;color:#7f8794;text-align:c
 <header><div class="nav">
 <a class="logo" href="#start">Pyrso<span>nevan.pl</span></a>
 <nav><a href="#start">Start</a><a href="#rangi">Rangi</a><a href="#statystyki">Statystyki</a><a href="#regulamin">Regulamin</a><a href="#kontakt">Kontakt</a></nav>
-<div id="logged-out-view">
+<div id="auth-container">
     <button class="btn btn-dark" onclick="openModal('login')">Zaloguj</button>
 </div>
-<div id="logged-in-view" style="display: none; align-items: center; gap: 8px;">
-    <img id="user-avatar" src="" alt="Avatar" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;">
-    <button class="btn btn-dark" onclick="logout()">Wyloguj</button>
-</div>
-
 <main id="start">
 <section class="hero"><div class="hero-content">
 <div class="badge">⚔️ NOWOCZESNY SERWER MINECRAFT</div>
@@ -254,7 +249,7 @@ updateStatus();setInterval(updateStatus,30000);
     }
   });
 // ==========================================
-// BEZPIECZNA INTEGRACJA DISCORDA
+// STABILNA INTEGRACJA DISCORDA (PODMIANA ZAWARTOŚCI)
 // ==========================================
 const DISCORD_CLIENT_ID = '1552604316332851230';
 
@@ -277,29 +272,34 @@ window.logout = function() {
 
 function applyState() {
   try {
+    const authContainer = document.getElementById('auth-container');
+    if (!authContainer) return;
+
     const savedUser = localStorage.getItem('discord_user');
     if (savedUser) {
       const user = JSON.parse(savedUser);
-      const loggedOutView = document.getElementById('logged-out-view');
-      const loggedInView = document.getElementById('logged-in-view');
-      const userAvatar = document.getElementById('user-avatar');
-
-      if (loggedOutView) loggedOutView.style.setProperty('display', 'none', 'important');
-      if (loggedInView) loggedInView.style.setProperty('display', 'flex', 'important');
-      if (userAvatar && user.avatar) {
-        userAvatar.src = user.avatar;
-        userAvatar.title = user.name || '';
-      }
+      // Podmieniamy zawartość na awatar i przycisk wylogowania bez psucia CSS
+      authContainer.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <img src="${user.avatar}" alt="Avatar" title="${user.name}" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;">
+            <button class="btn btn-dark" onclick="logout()">Wyloguj</button>
+        </div>
+      `;
+    } else {
+      // Przywracamy standardowy przycisk logowania
+      authContainer.innerHTML = `
+        <button class="btn btn-dark" onclick="openModal('login')">Zaloguj</button>
+      `;
     }
   } catch (e) {
     console.error("Błąd stanu Discord:", e);
   }
 }
 
-// Uruchomienie od razu
+// Sprawdź stan od razu po załadowaniu
 applyState();
 
-// Obsługa powrotu z tokenem
+// Obsługa powrotu z tokenem z Discorda
 window.addEventListener('DOMContentLoaded', () => {
   try {
     const hash = window.location.hash;
